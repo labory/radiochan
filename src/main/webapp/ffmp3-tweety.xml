@@ -1,0 +1,8 @@
+﻿<ffmp3-skin folder="ffmp3-tweety">
+  <bg image="bg.jpg" x="0" y="0" />
+  <play image="play.jpg" x="19" y="15" clickimage="playclick.jpg" />
+  <stop image="stop.jpg" x="33" y="43" clickimage="stopclick.jpg" />
+  <text x="74" y="12" width="108" height="22" color="#ffffff" font="arial" size="12" />
+  <volume x="69" y="39" width="115" height="22" holderImage="holder.jpg" mode="holder" />
+  <status imagePlay="statusplay.jpg" imageStop="statusstop.jpg" x="63" y="17" />
+</ffmp3-skin>
