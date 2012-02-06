@@ -8,6 +8,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.jsonp.client.JsonpRequestBuilder;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -21,6 +23,10 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class radiochan implements EntryPoint {
+
+  private final Label statisticPanel = new Label();
+  private final Label currentTrackPanel = new Label();
+
   /**
    * The message displayed to the user when the server cannot be reached or
    * returns an error.
@@ -145,5 +151,45 @@ public class radiochan implements EntryPoint {
     MyHandler handler = new MyHandler();
     sendButton.addClickHandler(handler);
     nameField.addKeyUpHandler(handler);
+
+    RootPanel.get("statistic").add(statisticPanel);
+    RootPanel.get("track").add(currentTrackPanel);
+
+    Timer refreshTimer = new Timer() {
+      public void run() {
+        refreshStatistic();
+      }
+    };
+    refreshStatistic();
+    refreshTimer.scheduleRepeating(5000);
+  }
+
+  private void refreshStatistic() {
+    // Send request to server and catch any errors.
+    JsonpRequestBuilder jsonp = new JsonpRequestBuilder();
+    //jsonp.requestObject("http://saw:8000/statistic.xsl", new AsyncCallback<JavaScriptObject>() {
+    //jsonp.requestObject("http://saw:8000/statistic.xsl?callback=statistic",
+    //jsonp.requestObject("http://ws.geonames.org/postalCodeLookupJSON?postalcode=M1&country=GB&maxRows=4",
+    jsonp.requestObject("/radiochan/statistic",
+            new AsyncCallback<Mount>() {
+                public void onFailure(Throwable throwable) {
+                    System.out.println("FAILED: " + throwable.getMessage());
+                }
+
+                public void onSuccess(Mount mount) {
+                    update(mount.getStatistic());
+                }
+            });
+  }
+
+  private void update(Statistic s) {
+      String listeners = "Listeners: ";
+      String track = "Track: ";
+      if (s != null) {
+          listeners += s.getListeners() + "+0/" + s.getListenersPeak() + "+0";
+          track += s.getTitle();
+      }
+      statisticPanel.setText(listeners);
+      currentTrackPanel.setText(track);
   }
 }
